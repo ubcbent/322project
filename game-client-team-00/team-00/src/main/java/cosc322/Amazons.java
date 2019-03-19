@@ -33,7 +33,7 @@ public class Amazons extends GamePlayer{
     public String usrName = null;
     
     public GameState boardstate = new GameState();
-            
+    
     /**
      * Constructor
      * @param name
@@ -79,25 +79,37 @@ public class Amazons extends GamePlayer{
 		
 	if(messageType.equals(GameMessage.GAME_ACTION_START)){
 		
+		System.out.println("asdf");
 	    if(((String) msgDetails.get("player-black")).equals(this.userName())){
 		System.out.println("Game State: " +  msgDetails.get("player-black"));
 		boardstate.initialize(false);
 		//System.out.print(boardstate.legalMoves.size());
+		boardstate.getLegalMoves();
+		//System.out.print(boardstate.legalMoves.size());
+    	LegalMove ourMove = boardstate.legalMoves.get(0);
+	    gameClient.sendMoveMessage(ourMove.currPos, ourMove.newPos, ourMove.arrowPos);
+	    boardstate.gameboard[ourMove.currPos[0]][ourMove.currPos[1]] = 0;
+	    boardstate.gameboard[ourMove.newPos[0]][ourMove.newPos[1]] = 1;
+	    boardstate.gameboard[ourMove.arrowPos[0]][ourMove.arrowPos[1]] = 3;
+	    
+	    //find which queen was moved
+	    for(int i = 1; i<5 ; i++) {
+	    	if(boardstate.ourQueens[i][1] == ourMove.currPos[0] && boardstate.ourQueens[i][2] == ourMove.currPos[1]) {
+	    		boardstate.ourQueens[i][1] = ourMove.newPos[0];
+	    		boardstate.ourQueens[i][2] = ourMove.newPos[1];
+	    		break;
+	    	}
+	    }
+	    
 	    }else {
 	    	boardstate.initialize(true);
-	    	boardstate.getLegalMoves();
-			//System.out.print(boardstate.legalMoves.size());
-	    	LegalMove ourMove = boardstate.legalMoves.get(0);
-		    gameClient.sendMoveMessage(ourMove.currPos, ourMove.newPos, ourMove.arrowPos);
-		    boardstate.gameboard[ourMove.currPos[0]][ourMove.currPos[1]] = 0;
-		    boardstate.gameboard[ourMove.newPos[0]][ourMove.newPos[1]] = 1;
-		    boardstate.gameboard[ourMove.arrowPos[0]][ourMove.arrowPos[1]] = 3;
+	    	
 	    }
 	}
 	else if(messageType.equals(GameMessage.GAME_ACTION_MOVE)){
 	    handleOpponentMove(msgDetails);
 	    try {
-	    	Thread.sleep(500);
+	    	Thread.sleep(100);
 	    }catch(Exception e) {
 	    	e.printStackTrace();
 	    }
@@ -111,12 +123,26 @@ public class Amazons extends GamePlayer{
 	    	System.out.println();
 	    }
 	    
+	    if(boardstate.legalMoves.size()==0) {
+	    	System.out.println("The game is over");
+	    	gameClient.sendTextMessage(AmazonsGameMessage.GAME_STATE_PLAYER_LOST);
+	    	System.exit(0);
+	    }
 	    LegalMove ourMove = boardstate.legalMoves.get(0);
 	    
 	    //update board
 	    boardstate.gameboard[ourMove.currPos[0]][ourMove.currPos[1]] = 0;
 	    boardstate.gameboard[ourMove.newPos[0]][ourMove.newPos[1]] = 1;
 	    boardstate.gameboard[ourMove.arrowPos[0]][ourMove.arrowPos[1]] = 3;
+	    
+	  //find which queen was moved
+	    for(int i = 1; i<5 ; i++) {
+	    	if(boardstate.ourQueens[i][1] == ourMove.currPos[0] && boardstate.ourQueens[i][2] == ourMove.currPos[1]) {
+	    		boardstate.ourQueens[i][1] = ourMove.newPos[0];
+	    		boardstate.ourQueens[i][2] = ourMove.newPos[1];
+	    		break;
+	    	}
+	    }
 	    
 	    board.markPosition(ourMove.newPos[0], ourMove.newPos[1], ourMove.arrowPos[0], ourMove.arrowPos[1], 
 	    		ourMove.currPos[0], ourMove.currPos[1], true);
@@ -140,6 +166,15 @@ public class Amazons extends GamePlayer{
 	boardstate.gameboard[qcurr.get(0)][qcurr.get(1)] = 0;
 	boardstate.gameboard[qnew.get(0)][qnew.get(1)] = 2;
 	boardstate.gameboard[arrow.get(0)][arrow.get(1)] = 3;
+	
+	//find which queen was moved
+    for(int i = 1; i<5 ; i++) {
+    	if(boardstate.theirQueens[i][1] == qcurr.get(0) && boardstate.theirQueens[i][2] == qcurr.get(1)) {
+    		boardstate.theirQueens[i][1] = qnew.get(0);
+    		boardstate.theirQueens[i][2] = qnew.get(1);
+    		break;
+    	}
+    }
 	
 	board.markPosition(qnew.get(0), qnew.get(1), arrow.get(0), arrow.get(1), 
 			  qcurr.get(0), qcurr.get(1), true);		

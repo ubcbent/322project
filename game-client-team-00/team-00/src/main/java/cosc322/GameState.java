@@ -9,7 +9,7 @@ public class GameState {
 	public int[][] theirQueens = new int[5][3];
 	public ArrayList<LegalMove> legalMoves = new ArrayList<LegalMove>();
 	
-	public void initialize(boolean white) { // white is true if we are first
+	public void initialize(boolean white) { // white is false if we are first
 	
 		 if(white) {
 			 //our queens
