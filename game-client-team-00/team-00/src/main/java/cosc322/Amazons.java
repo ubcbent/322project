@@ -82,12 +82,46 @@ public class Amazons extends GamePlayer{
 	    if(((String) msgDetails.get("player-black")).equals(this.userName())){
 		System.out.println("Game State: " +  msgDetails.get("player-black"));
 		boardstate.initialize(false);
+		//System.out.print(boardstate.legalMoves.size());
 	    }else {
 	    	boardstate.initialize(true);
+	    	boardstate.getLegalMoves();
+			//System.out.print(boardstate.legalMoves.size());
+	    	LegalMove ourMove = boardstate.legalMoves.get(0);
+		    gameClient.sendMoveMessage(ourMove.currPos, ourMove.newPos, ourMove.arrowPos);
+		    boardstate.gameboard[ourMove.currPos[0]][ourMove.currPos[1]] = 0;
+		    boardstate.gameboard[ourMove.newPos[0]][ourMove.newPos[1]] = 1;
+		    boardstate.gameboard[ourMove.arrowPos[0]][ourMove.arrowPos[1]] = 3;
 	    }
 	}
 	else if(messageType.equals(GameMessage.GAME_ACTION_MOVE)){
 	    handleOpponentMove(msgDetails);
+	    try {
+	    	Thread.sleep(500);
+	    }catch(Exception e) {
+	    	e.printStackTrace();
+	    }
+	    //make move
+	    boardstate.getLegalMoves();
+	    
+	    for(int i = 1; i<=10;i++) {
+	    	for(int j = 1;j<=10;j++) {
+	    		System.out.print(boardstate.gameboard[i][j]+" ");
+	    	}
+	    	System.out.println();
+	    }
+	    
+	    LegalMove ourMove = boardstate.legalMoves.get(0);
+	    
+	    //update board
+	    boardstate.gameboard[ourMove.currPos[0]][ourMove.currPos[1]] = 0;
+	    boardstate.gameboard[ourMove.newPos[0]][ourMove.newPos[1]] = 1;
+	    boardstate.gameboard[ourMove.arrowPos[0]][ourMove.arrowPos[1]] = 3;
+	    
+	    board.markPosition(ourMove.newPos[0], ourMove.newPos[1], ourMove.arrowPos[0], ourMove.arrowPos[1], 
+	    		ourMove.currPos[0], ourMove.currPos[1], true);
+	    
+	    gameClient.sendMoveMessage(ourMove.currPos, ourMove.newPos, ourMove.arrowPos);
 	}
 	
 	return true;
@@ -102,7 +136,11 @@ public class Amazons extends GamePlayer{
 	System.out.println("QCurr: " + qcurr);
 	System.out.println("QNew: " + qnew);
 	System.out.println("Arrow: " + arrow);
-
+	
+	boardstate.gameboard[qcurr.get(0)][qcurr.get(1)] = 0;
+	boardstate.gameboard[qnew.get(0)][qnew.get(1)] = 2;
+	boardstate.gameboard[arrow.get(0)][arrow.get(1)] = 3;
+	
 	board.markPosition(qnew.get(0), qnew.get(1), arrow.get(0), arrow.get(1), 
 			  qcurr.get(0), qcurr.get(1), true);		
     }

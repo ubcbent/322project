@@ -92,14 +92,14 @@ public class GameState {
 				}
 			}
 			//vertical moves
-			for(int down = 1; col-down>0 ;down++) {// check spaces under queen
+			for(int down = 1; row-down>0 ;down++) {// check spaces under queen
 				if(gameboard[row-down][col]==0) { // space is clear
 					checkArrowMoves(row,col,row-down,col);
 				}else {
 					break;
 				}
 			}
-			for(int up = 1; col+up<=10 ;up++) {// check spaces above queen
+			for(int up = 1; row+up<=10 ;up++) {// check spaces above queen
 				if(gameboard[row+up][col]==0) { // space is clear
 					checkArrowMoves(row,col,row+up,col);
 				}else {
@@ -138,14 +138,14 @@ public class GameState {
 			
 		}
 	}
-	private void checkArrowMoves(int currRow, int currCol, int newRow, int newCol) {
+	protected void checkArrowMoves(int currRow, int currCol, int newRow, int newCol) {
 		//for checking arrow shot candidates, we know we may shoot an arrow through the spot we moved from, or through any empty spot
 		//horizontal moves
 		for(int left = 1; newCol-left>0 ;left++) {// check spaces to left of queen
 			if(gameboard[newRow][newCol-left]==0 || (newRow==currRow && newCol-left==currCol)) { // space is clear
-				int[] curr = {-1,currRow,currCol};
-				int[] neww = {-1,newRow,newCol};
-				int[] arrow = {-1,newRow,newCol-left};
+				int[] curr = {currRow,currCol};
+				int[] neww = {newRow,newCol};
+				int[] arrow = {newRow,newCol-left};
 				LegalMove move = new LegalMove(curr,neww,arrow) ;
 				legalMoves.add(move);
 			}else {
@@ -154,9 +154,9 @@ public class GameState {
 		}
 		for(int right = 1; newCol+right<=10 ;right++) {// check spaces to right of queen
 			if(gameboard[newRow][newCol+right]==0 || (newRow==currRow && newCol+right==currCol)) { // space is clear
-				int[] curr = {-1,currRow,currCol};
-				int[] neww = {-1,newRow,newCol};
-				int[] arrow = {-1,newRow,newCol+right};
+				int[] curr = {currRow,currCol};
+				int[] neww = {newRow,newCol};
+				int[] arrow = {newRow,newCol+right};
 				LegalMove move = new LegalMove(curr,neww,arrow) ;
 				legalMoves.add(move);
 			}else {
@@ -166,9 +166,9 @@ public class GameState {
 		//vertical moves
 		for(int down = 1; newRow-down>0 ;down++) {// check spaces under queen
 			if(gameboard[newRow-down][newCol]==0 || (newRow-down==currRow && newCol==currCol)) { // space is clear
-				int[] curr = {-1,currRow,currCol};
-				int[] neww = {-1,newRow,newCol};
-				int[] arrow = {-1,newRow-down,newCol};
+				int[] curr = {currRow,currCol};
+				int[] neww = {newRow,newCol};
+				int[] arrow = {newRow-down,newCol};
 				LegalMove move = new LegalMove(curr,neww,arrow) ;
 				legalMoves.add(move);
 			}else {
@@ -177,9 +177,9 @@ public class GameState {
 		}
 		for(int up = 1; newRow+up<=10 ;up++) {// check spaces above queen
 			if(gameboard[newRow+up][newCol]==0 || (newRow+up==currRow && newCol==currCol)) { // space is clear
-				int[] curr = {-1,currRow,currCol};
-				int[] neww = {-1,newRow,newCol};
-				int[] arrow = {-1,newRow+up,newCol};
+				int[] curr = {currRow,currCol};
+				int[] neww = {newRow,newCol};
+				int[] arrow = {newRow+up,newCol};
 				LegalMove move = new LegalMove(curr,neww,arrow) ;
 				legalMoves.add(move);
 			}else {
@@ -189,9 +189,9 @@ public class GameState {
 		//diagonal moves
 		for(int dl = 1; newRow-dl>0 && newCol-dl>0 ;dl++) {// check spaces down and to the left of queen
 			if(gameboard[newRow-dl][newCol-dl]==0 || (newRow-dl==currRow && newCol-dl==currCol)) { // space is clear
-				int[] curr = {-1,currRow,currCol};
-				int[] neww = {-1,newRow,newCol};
-				int[] arrow = {-1,newRow-dl,newCol-dl};
+				int[] curr = {currRow,currCol};
+				int[] neww = {newRow,newCol};
+				int[] arrow = {newRow-dl,newCol-dl};
 				LegalMove move = new LegalMove(curr,neww,arrow) ;
 				legalMoves.add(move);
 			}else {
@@ -200,9 +200,9 @@ public class GameState {
 		}
 		for(int ur = 1; newRow+ur<=10 && newCol+ur<=10 ;ur++) {// check spaces up and to the right of queen
 			if(gameboard[newRow+ur][newCol+ur]==0 || (newRow+ur==currRow && newCol+ur==currCol)) { // space is clear
-				int[] curr = {-1,currRow,currCol};
-				int[] neww = {-1,newRow,newCol};
-				int[] arrow = {-1,newRow+ur,newCol+ur};
+				int[] curr = {currRow,currCol};
+				int[] neww = {newRow,newCol};
+				int[] arrow = {newRow+ur,newCol+ur};
 				LegalMove move = new LegalMove(curr,neww,arrow) ;
 				legalMoves.add(move);
 			}else {
@@ -211,9 +211,9 @@ public class GameState {
 		}
 		for(int ul = 1; newRow+ul<=10 && newCol-ul>0 ;ul++) {// check spaces up and to the left of queen
 			if(gameboard[newRow+ul][newCol-ul]==0 || (newRow+ul==currRow && newCol-ul==currCol)) { // space is clear
-				int[] curr = {-1,currRow,currCol};
-				int[] neww = {-1,newRow,newCol};
-				int[] arrow = {-1,newRow+ul,newCol-ul};
+				int[] curr = {currRow,currCol};
+				int[] neww = {newRow,newCol};
+				int[] arrow = {newRow+ul,newCol-ul};
 				LegalMove move = new LegalMove(curr,neww,arrow) ;
 				legalMoves.add(move);
 			}else {
@@ -222,9 +222,9 @@ public class GameState {
 		}
 		for(int dr = 1; newRow-dr>0 && newCol+dr<=10 ;dr++) {// check spaces down and to the left of queen
 			if(gameboard[newRow-dr][newCol+dr]==0 || (newRow-dr==currRow && newCol+dr==currCol)) { // space is clear
-				int[] curr = {-1,currRow,currCol};
-				int[] neww = {-1,newRow,newCol};
-				int[] arrow = {-1,newRow-dr,newCol+dr};
+				int[] curr = {currRow,currCol};
+				int[] neww = {newRow,newCol};
+				int[] arrow = {newRow-dr,newCol+dr};
 				LegalMove move = new LegalMove(curr,neww,arrow) ;
 				legalMoves.add(move);
 			}else {
