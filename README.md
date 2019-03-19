@@ -1,0 +1,1 @@
+This is our AI project for COSC322
