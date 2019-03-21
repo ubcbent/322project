@@ -1,25 +1,95 @@
 package cosc322;
 
-import java.util.LinkedList;
+import java.util.*;
 
 public class SearchNode {
-public int turn;
-public LinkedList<minimaxNode> nodes =new LinkedList<minimaxNode>();
-SearchNode(LinkedList nodes, int turn){
-	this.turn=turn;
-	this.nodes=nodes;
-}
-public minimaxNode getnode() {
-	minimaxNode temp;
-	minimaxNode max=null;
-	int maxx=0;
-	while(!nodes.isEmpty()) {
-	temp=nodes.removeFirst();
-	if(temp.LegalMoves.hscore>maxx)
-		maxx=temp.LegalMoves.hscore;
-	max=temp;
+	public static final int gamePhaseOne = 10;
+	public static final int gamePhaseTwo = 20;
+	public static final int gamePhaseThree = 30;
+	public static final int gamePhaseFour = 40;
+	public static final int gamePhaseFive = 50;
+	public static final int gamePhaseSix = 60;
+	public static final int gamePhaseSeven = 70;
+	public static final int gamePhaseEight = 80;
+	public static final int gamePhaseNine = 90;
+	public static final int gamePhaseTen = 100;
+	
+	public int turn;
+	public int depth;
+	public int[][] gameBoard;
+	public ArrayList<LegalMove> moves;
+	public ArrayList<minimaxNode> tree;
+	public int[] bestMove;
+	
+	public SearchNode(int turn, int[][] board, ArrayList<LegalMove> move) {
+		this.turn = turn;
+		this.depth = 0;
+		this.gameBoard = board;
+		this.moves = move;
+		this.tree = new ArrayList<minimaxNode>();
+		this.bestMove = new int[]{-1, -1, -1, -1, -1, -1};
 	}
-	return max;
-}
-
+	
+	public void treeDepth() {
+		switch (depth) {
+			case gamePhaseOne:
+				depth = 2;
+			case gamePhaseTwo:
+				depth = 6;
+			case gamePhaseThree:
+				depth = 10;
+			case gamePhaseFour:
+				depth = 16;
+		}
+	}
+	
+	//TODO apply heuristic function and update bestMove
+	public void applyHeuristicVal() {
+		new MinDistanceFunction(gameBoard, moves).evaluateAllMoves();
+		
+		LegalMove best;
+		
+		for (LegalMove m : moves) {
+			
+		}
+	}
+	
+	public ArrayList<minimaxNode> buildTree() {
+		tree = new ArrayList<minimaxNode>();
+		
+		int treeDepth = 1;
+		
+		minimaxNode root = new minimaxNode(null, null, null);
+		tree.add(root);
+		
+		
+		for (LegalMove m : moves) {
+			int[][] updatedBoard = copyArray(gameBoard);
+			updatedBoard = updateBoard(m, updatedBoard, treeDepth);
+			
+			minimaxNode node = new minimaxNode();
+			tree.add(node);
+		}		
+	}
+	
+	//TODO
+	public void minimaxSearch() {
+		
+	}
+	
+	public int[][] updateBoard(LegalMove m, int[][] board, int depth) {
+		
+		
+		return board;
+	}
+	
+	public static int[][] copyArray(int[][] arr) {
+		int[][] copied = new int[arr.length][arr[0].length];
+		
+		for(int i = 0; i < arr.length; i++)
+			  for(int j = 0; j < arr[i].length; j++)
+			    copied[i][j] = arr[i][j];
+		
+		return copied;
+	}
 }
