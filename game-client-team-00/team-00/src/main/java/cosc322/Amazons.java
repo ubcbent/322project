@@ -91,7 +91,6 @@ public class Amazons extends GamePlayer{
 		    for(int i = 0; i<boardstate.legalMoves.size();i++) {
 		    	if(boardstate.legalMoves.get(i).hscore>boardstate.legalMoves.get(maxindex).hscore) {
 		    		maxindex = i;
-		    		System.out.println(boardstate.legalMoves.get(maxindex).hscore);
 		    	}
 		    }
 		    LegalMove ourMove = boardstate.legalMoves.get(maxindex);
@@ -122,7 +121,7 @@ public class Amazons extends GamePlayer{
 	    handleOpponentMove(msgDetails);
 	    
 	    try {
-	    	Thread.sleep(500);
+	    	//Thread.sleep(500);
 	    }catch(Exception e) {
 	    	e.printStackTrace();
 	    }
