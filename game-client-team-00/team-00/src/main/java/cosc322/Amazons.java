@@ -80,34 +80,38 @@ public class Amazons extends GamePlayer{
 	if(messageType.equals(GameMessage.GAME_ACTION_START)){
 		
 	    if(((String) msgDetails.get("player-black")).equals(this.userName())){
-		System.out.println("Game State: " +  msgDetails.get("player-black"));
-		boardstate.initialize(false);
-		//System.out.print(boardstate.legalMoves.size());
-		boardstate.getLegalMoves(boardstate.gameboard);
-		//System.out.print(boardstate.legalMoves.size());
-		MinDistanceFunction f = new MinDistanceFunction(boardstate.gameboard,boardstate.legalMoves);
-	    f.evaluateAllMoves();
-	    int maxindex = 0;
-	    for(int i = 0; i<boardstate.legalMoves.size();i++) {
-	    	if(boardstate.legalMoves.get(i).hscore>boardstate.legalMoves.get(maxindex).hscore) {
-	    		maxindex = i;
-	    		System.out.println(boardstate.legalMoves.get(maxindex).hscore);
-	    	}
-	    }
-	    LegalMove ourMove = boardstate.legalMoves.get(maxindex);
-	    gameClient.sendMoveMessage(ourMove.currPos, ourMove.newPos, ourMove.arrowPos);
-	    boardstate.gameboard[ourMove.currPos[0]][ourMove.currPos[1]] = 0;
-	    boardstate.gameboard[ourMove.newPos[0]][ourMove.newPos[1]] = 1;
-	    boardstate.gameboard[ourMove.arrowPos[0]][ourMove.arrowPos[1]] = 3;
+			System.out.println("Game State: " +  msgDetails.get("player-black"));
+			boardstate.initialize(false);
+			//System.out.print(boardstate.legalMoves.size());
+			boardstate.getLegalMoves(boardstate.gameboard);
+			//System.out.print(boardstate.legalMoves.size());
+			MinDistanceFunction f = new MinDistanceFunction(boardstate.gameboard,boardstate.legalMoves);
+		    f.evaluateAllMoves();
+		    int maxindex = 0;
+		    for(int i = 0; i<boardstate.legalMoves.size();i++) {
+		    	if(boardstate.legalMoves.get(i).hscore>boardstate.legalMoves.get(maxindex).hscore) {
+		    		maxindex = i;
+		    		System.out.println(boardstate.legalMoves.get(maxindex).hscore);
+		    	}
+		    }
+		    LegalMove ourMove = boardstate.legalMoves.get(maxindex);
+		    
+		    gameClient.sendMoveMessage(ourMove.currPos, ourMove.newPos, ourMove.arrowPos);
+		    boardstate.gameboard[ourMove.currPos[0]][ourMove.currPos[1]] = 0;
+		    boardstate.gameboard[ourMove.newPos[0]][ourMove.newPos[1]] = 1;
+		    boardstate.gameboard[ourMove.arrowPos[0]][ourMove.arrowPos[1]] = 3;
+		    
+		    board.markPosition(ourMove.newPos[0], ourMove.newPos[1], ourMove.arrowPos[0], ourMove.arrowPos[1], 
+		    		ourMove.currPos[0], ourMove.currPos[1], true);
 	    
-	    //find which queen was moved
-	    for(int i = 1; i<5 ; i++) {
-	    	if(boardstate.ourQueens[i][1] == ourMove.currPos[0] && boardstate.ourQueens[i][2] == ourMove.currPos[1]) {
-	    		boardstate.ourQueens[i][1] = ourMove.newPos[0];
-	    		boardstate.ourQueens[i][2] = ourMove.newPos[1];
-	    		break;
-	    	}
-	    }
+		    //find which queen was moved
+		    for(int i = 1; i<5 ; i++) {
+		    	if(boardstate.ourQueens[i][1] == ourMove.currPos[0] && boardstate.ourQueens[i][2] == ourMove.currPos[1]) {
+		    		boardstate.ourQueens[i][1] = ourMove.newPos[0];
+		    		boardstate.ourQueens[i][2] = ourMove.newPos[1];
+		    		break;
+		    	}
+		    }
 	    
 	    }else {
 	    	boardstate.initialize(true);
@@ -118,7 +122,7 @@ public class Amazons extends GamePlayer{
 	    handleOpponentMove(msgDetails);
 	    
 	    try {
-	    	//Thread.sleep(500);
+	    	Thread.sleep(500);
 	    }catch(Exception e) {
 	    	e.printStackTrace();
 	    }
@@ -130,7 +134,7 @@ public class Amazons extends GamePlayer{
 	    f.evaluateAllMoves();
 	    
 	    //print ai's perspective of the board (for testing)
-	    for(int i = 1; i<=10;i++) {
+	    for(int i = 10; i>0;i--) {
 	    	for(int j = 1;j<=10;j++) {
 	    		System.out.print(boardstate.gameboard[i][j]+" ");
 	    	}
@@ -140,7 +144,7 @@ public class Amazons extends GamePlayer{
 	    if(boardstate.legalMoves.size()==0) {
 	    	System.out.println("The game is over");
 	    	gameClient.sendTextMessage(AmazonsGameMessage.GAME_STATE_PLAYER_LOST);
-	    	System.exit(0);
+	    	//System.exit(0);
 	    }
 	    
 	    int maxindex = 0;
