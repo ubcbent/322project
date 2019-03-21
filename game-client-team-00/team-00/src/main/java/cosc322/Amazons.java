@@ -20,6 +20,7 @@ import ygraphs.ai.smart_fox.games.GameClient;
 import ygraphs.ai.smart_fox.games.GameModel;
 import ygraphs.ai.smart_fox.games.GamePlayer;
 import java.util.Timer;
+import java.util.Scanner;
 /**
  * For testing and demo purposes only. An GUI Amazon client for human players 
  * @author yong.gao@ubc.ca
@@ -62,7 +63,14 @@ public class Amazons extends GamePlayer{
 
 	//once logged in, the gameClient will have  the names of available game rooms  
 	ArrayList<String> rooms = gameClient.getRoomList();
-	this.gameClient.joinRoom(rooms.get(0));	 		
+	int num = 0;
+	for (String roomname : rooms) {
+		System.out.println(num + " - " + roomname);
+		num++;
+	}
+	Scanner roompicker = new Scanner(System.in);
+	int room = roompicker.nextInt();
+	this.gameClient.joinRoom(rooms.get(room));	 		
     }
     
     
@@ -567,8 +575,8 @@ public class Amazons extends GamePlayer{
      * @param args
      */
     public static void main(String[] args) { 
-	Amazons game01 = new Amazons("player-01", "01");
-	Amazons game02 = new Amazons("player-02", "02");
+	Amazons game01 = new Amazons("G4 - 1", "01");
+	//Amazons game02 = new Amazons("player-02", "02");
 	//Amazons game = new Amazons(args[0], args[1]);		
     }
 }//end of Amazon
