@@ -1,13 +1,14 @@
 package cosc322;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class GameState {
 	//0 is empty square, 1 refers to our queens, 2 is enemy queens, 3 is arrow
 	public int[][] gameboard = new int[11][11];
 	public int[][] ourQueens = new int[5][3];
 	public int[][] theirQueens = new int[5][3];
-	public ArrayList<LegalMove> legalMoves = new ArrayList<LegalMove>();
+	public LinkedList<LegalMove> legalMoves = new LinkedList<LegalMove>();
 	
 	public void initialize(boolean white) { // white is false if we are first
 	
@@ -70,7 +71,7 @@ public class GameState {
 		 }
 	}
 	
-	public void getLegalMoves() {
+	public void getLegalMoves(int[][] board) {
 		legalMoves.clear();
 		for(int queen = 1; queen <=4 ; queen++) {
 			//current position
@@ -78,14 +79,14 @@ public class GameState {
 			int col = ourQueens[queen][2];
 			//horizontal moves
 			for(int left = 1; col-left>0 ;left++) {// check spaces to left of queen
-				if(gameboard[row][col-left]==0) { // space is clear
+				if(board[row][col-left]==0) { // space is clear
 					checkArrowMoves(row,col,row,col-left);
 				}else {
 					break;
 				}
 			}
 			for(int right = 1; col+right<=10 ;right++) {// check spaces to right of queen
-				if(gameboard[row][col+right]==0) { // space is clear
+				if(board[row][col+right]==0) { // space is clear
 					checkArrowMoves(row,col,row,col+right);
 				}else {
 					break;
@@ -93,14 +94,14 @@ public class GameState {
 			}
 			//vertical moves
 			for(int down = 1; row-down>0 ;down++) {// check spaces under queen
-				if(gameboard[row-down][col]==0) { // space is clear
+				if(board[row-down][col]==0) { // space is clear
 					checkArrowMoves(row,col,row-down,col);
 				}else {
 					break;
 				}
 			}
 			for(int up = 1; row+up<=10 ;up++) {// check spaces above queen
-				if(gameboard[row+up][col]==0) { // space is clear
+				if(board[row+up][col]==0) { // space is clear
 					checkArrowMoves(row,col,row+up,col);
 				}else {
 					break;
@@ -108,28 +109,28 @@ public class GameState {
 			}
 			//diagonals
 			for(int dl = 1; col-dl>0 && row-dl>0 ;dl++) {// check spaces down and left of queen
-				if(gameboard[row-dl][col-dl]==0) { // space is clear
+				if(board[row-dl][col-dl]==0) { // space is clear
 					checkArrowMoves(row,col,row-dl,col-dl);
 				}else {
 					break;
 				}
 			}
 			for(int ur = 1; col+ur<=10 && row+ur<=10 ;ur++) {// check spaces up and right of queen
-				if(gameboard[row+ur][col+ur]==0) { // space is clear
+				if(board[row+ur][col+ur]==0) { // space is clear
 					checkArrowMoves(row,col,row+ur,col+ur);
 				}else {
 					break;
 				}
 			}
 			for(int ul = 1; col-ul>0 && row+ul<=10 ;ul++) {// check spaces up and left of queen
-				if(gameboard[row+ul][col-ul]==0) { // space is clear
+				if(board[row+ul][col-ul]==0) { // space is clear
 					checkArrowMoves(row,col,row+ul,col-ul);
 				}else {
 					break;
 				}
 			}
 			for(int dr = 1; col+dr<=10 && row-dr>0 ;dr++) {// check spaces down and right of queen
-				if(gameboard[row-dr][col+dr]==0) { // space is clear
+				if(board[row-dr][col+dr]==0) { // space is clear
 					checkArrowMoves(row,col,row-dr,col+dr);
 				}else {
 					break;
@@ -146,7 +147,16 @@ public class GameState {
 				int[] curr = {currRow,currCol};
 				int[] neww = {newRow,newCol};
 				int[] arrow = {newRow,newCol-left};
-				LegalMove move = new LegalMove(curr,neww,arrow) ;
+				int[][]tempboard=new int[11][11];
+				for(int i = 1; i<11; i++) {
+					for(int j = 1; j<11; j++) {
+						tempboard[i][j] = gameboard[i][j];
+					}
+				}
+				tempboard[neww[0]][neww[1]]=1;
+				tempboard[curr[0]][curr[1]]=0;
+				tempboard[arrow[0]][arrow[1]]=3;
+				LegalMove move = new LegalMove(curr,neww,arrow,tempboard) ;
 				legalMoves.add(move);
 			}else {
 				break;
@@ -157,7 +167,16 @@ public class GameState {
 				int[] curr = {currRow,currCol};
 				int[] neww = {newRow,newCol};
 				int[] arrow = {newRow,newCol+right};
-				LegalMove move = new LegalMove(curr,neww,arrow) ;
+				int[][]tempboard=new int[11][11];
+				for(int i = 1; i<11; i++) {
+					for(int j = 1; j<11; j++) {
+						tempboard[i][j] = gameboard[i][j];
+					}
+				}
+				tempboard[neww[0]][neww[1]]=1;
+				tempboard[curr[0]][curr[1]]=0;
+				tempboard[arrow[0]][arrow[1]]=3;
+				LegalMove move = new LegalMove(curr,neww,arrow,tempboard) ;
 				legalMoves.add(move);
 			}else {
 				break;
@@ -169,7 +188,16 @@ public class GameState {
 				int[] curr = {currRow,currCol};
 				int[] neww = {newRow,newCol};
 				int[] arrow = {newRow-down,newCol};
-				LegalMove move = new LegalMove(curr,neww,arrow) ;
+				int[][]tempboard=new int[11][11];
+				for(int i = 1; i<11; i++) {
+					for(int j = 1; j<11; j++) {
+						tempboard[i][j] = gameboard[i][j];
+					}
+				}
+				tempboard[neww[0]][neww[1]]=1;
+				tempboard[curr[0]][curr[1]]=0;
+				tempboard[arrow[0]][arrow[1]]=3;
+				LegalMove move = new LegalMove(curr,neww,arrow,tempboard) ;
 				legalMoves.add(move);
 			}else {
 				break;
@@ -180,7 +208,16 @@ public class GameState {
 				int[] curr = {currRow,currCol};
 				int[] neww = {newRow,newCol};
 				int[] arrow = {newRow+up,newCol};
-				LegalMove move = new LegalMove(curr,neww,arrow) ;
+				int[][]tempboard=new int[11][11];
+				for(int i = 1; i<11; i++) {
+					for(int j = 1; j<11; j++) {
+						tempboard[i][j] = gameboard[i][j];
+					}
+				}
+				tempboard[neww[0]][neww[1]]=1;
+				tempboard[curr[0]][curr[1]]=0;
+				tempboard[arrow[0]][arrow[1]]=3;
+				LegalMove move = new LegalMove(curr,neww,arrow,tempboard) ;
 				legalMoves.add(move);
 			}else {
 				break;
@@ -192,7 +229,16 @@ public class GameState {
 				int[] curr = {currRow,currCol};
 				int[] neww = {newRow,newCol};
 				int[] arrow = {newRow-dl,newCol-dl};
-				LegalMove move = new LegalMove(curr,neww,arrow) ;
+				int[][]tempboard=new int[11][11];
+				for(int i = 1; i<11; i++) {
+					for(int j = 1; j<11; j++) {
+						tempboard[i][j] = gameboard[i][j];
+					}
+				}
+				tempboard[neww[0]][neww[1]]=1;
+				tempboard[curr[0]][curr[1]]=0;
+				tempboard[arrow[0]][arrow[1]]=3;
+				LegalMove move = new LegalMove(curr,neww,arrow,tempboard) ;
 				legalMoves.add(move);
 			}else {
 				break;
@@ -203,7 +249,16 @@ public class GameState {
 				int[] curr = {currRow,currCol};
 				int[] neww = {newRow,newCol};
 				int[] arrow = {newRow+ur,newCol+ur};
-				LegalMove move = new LegalMove(curr,neww,arrow) ;
+				int[][]tempboard=new int[11][11];
+				for(int i = 1; i<11; i++) {
+					for(int j = 1; j<11; j++) {
+						tempboard[i][j] = gameboard[i][j];
+					}
+				}
+				tempboard[neww[0]][neww[1]]=1;
+				tempboard[curr[0]][curr[1]]=0;
+				tempboard[arrow[0]][arrow[1]]=3;
+				LegalMove move = new LegalMove(curr,neww,arrow,tempboard) ;
 				legalMoves.add(move);
 			}else {
 				break;
@@ -214,7 +269,16 @@ public class GameState {
 				int[] curr = {currRow,currCol};
 				int[] neww = {newRow,newCol};
 				int[] arrow = {newRow+ul,newCol-ul};
-				LegalMove move = new LegalMove(curr,neww,arrow) ;
+				int[][]tempboard=new int[11][11];
+				for(int i = 1; i<11; i++) {
+					for(int j = 1; j<11; j++) {
+						tempboard[i][j] = gameboard[i][j];
+					}
+				}
+				tempboard[neww[0]][neww[1]]=1;
+				tempboard[curr[0]][curr[1]]=0;
+				tempboard[arrow[0]][arrow[1]]=3;
+				LegalMove move = new LegalMove(curr,neww,arrow,tempboard) ;
 				legalMoves.add(move);
 			}else {
 				break;
@@ -225,12 +289,31 @@ public class GameState {
 				int[] curr = {currRow,currCol};
 				int[] neww = {newRow,newCol};
 				int[] arrow = {newRow-dr,newCol+dr};
-				LegalMove move = new LegalMove(curr,neww,arrow) ;
+				int[][]tempboard=new int[11][11];
+				for(int i = 1; i<11; i++) {
+					for(int j = 1; j<11; j++) {
+						tempboard[i][j] = gameboard[i][j];
+					}
+				}
+				tempboard[neww[0]][neww[1]]=1;
+				tempboard[curr[0]][curr[1]]=0;
+				tempboard[arrow[0]][arrow[1]]=3;
+				LegalMove move = new LegalMove(curr,neww,arrow,tempboard) ;
 				legalMoves.add(move);
 			}else {
 				break;
 			}
 		}
+			
 	}
+	public void tostring(int [][]GB) {
+		for(int i=0;i<GB.length;i++) {
+			System.out.println();
+			for(int j=0;j<GB[0].length;j++) {
+				System.out.print(GB[i][j]+" ");
+			}//for j
+		}//for i
+	System.out.println();
+	}//to string
 	
 }

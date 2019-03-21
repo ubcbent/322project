@@ -7,12 +7,19 @@ public class LegalMove {
 	public int[] currPos;
 	public int[] newPos;
 	public int[] arrowPos;
+	public int[][]currentboard;
+
+
 	
-	public LegalMove(int[] curr, int[] neww, int[] arrow) {
+	public LegalMove(int[] curr, int[] neww, int[] arrow,int[][]current) {
 		currPos = curr;
 		newPos = neww;
 		arrowPos = arrow;
 		hscore = Integer.MIN_VALUE;
+		currentboard=current;
+		
 	}
+
+
 	
 }
