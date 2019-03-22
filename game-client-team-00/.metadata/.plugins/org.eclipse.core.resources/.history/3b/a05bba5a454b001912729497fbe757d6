@@ -1,0 +1,25 @@
+package cosc322;
+import java.util.*;
+
+
+public class MinDistanceFunction {
+
+	public int currentValue; // current heuristic value of the tile
+	public int[][] board = new int[11][11];
+	
+	public MinDistanceFunction(int[][] board) {
+		this.board = board;
+		currentValue = 0;
+	}
+	
+	
+	public Queue<int []> movesFromTile(int r, int c){
+		Queue<int []> q = new LinkedList<int []>(); // will hold coordinates of possible queen moves from/to this tile
+		
+		
+		
+		
+		return q;
+	}
+	
+}

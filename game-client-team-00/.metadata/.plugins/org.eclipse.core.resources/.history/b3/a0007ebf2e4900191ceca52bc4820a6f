@@ -1,0 +1,17 @@
+package cosc322;
+
+public class LegalMove {
+	
+	public int hscore;
+	public int[] currPos;
+	public int[] newPos;
+	public int[] arrowPos;
+	
+	public LegalMove(int[] curr, int[] neww, int[] arrow) {
+		currPos = curr;
+		newPos = neww;
+		arrowPos = arrow;
+		hscore = Integer.MIN_VALUE;
+	}
+	
+}

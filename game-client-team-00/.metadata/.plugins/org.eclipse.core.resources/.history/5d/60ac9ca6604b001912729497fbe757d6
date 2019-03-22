@@ -1,0 +1,197 @@
+package cosc322;
+import java.util.*;
+
+
+public class MinDistanceFunction {
+
+	public int[][] gameboard = new int[11][11];
+	public ArrayList<LegalMove> legalMoves;
+	
+	//public MinDistanceFunction(int[][] board, ArrayList<LegalMove> moves) {
+		//legalMoves = moves;
+		//gameboard = board;
+	//}
+	
+	
+	public void evaluateAllMoves() {
+		
+		for(LegalMove m : legalMoves) {
+			//m.hscore = evaluateMove(m);
+		}
+		
+	}
+	
+	
+	public int evaluateMove() {
+		
+		/*int[][] tempboard = new int[11][11];
+		for(int i = 1; i<11; i++) {
+			for(int j = 1; j<11; j++) {
+				tempboard[i][j] = gameboard[i][j];
+			}
+		}
+		
+		int val = 0;
+		tempboard[m.currPos[0]][m.currPos[1]] = 0;
+		tempboard[m.newPos[0]][m.newPos[1]] = 1;
+		tempboard[m.arrowPos[0]][m.arrowPos[1]] = 3;
+		*/
+		int[][] tempboard = {{0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,3,0,0,0,0},{0,0,0,0,3,0,3,0,0,0,0},{0,0,0,0,0,3,3,0,0,2,0},{0,1,0,3,1,3,3,3,0,3,0},{0,0,0,3,2,3,3,0,3,3,0},{0,0,3,3,3,3,0,3,0,0,0},{0,0,0,0,0,3,0,0,3,0,3},{0,3,3,3,3,3,3,0,0,0,0},{0,3,3,3,1,3,3,2,3,3,0},{0,3,0,2,3,0,3,3,0,0,1}};
+		int val = 0;
+		for(int i = 1; i<11; i++) {
+			for(int j=1; j<11; j++) {
+				if(tempboard[i][j]==0) {
+					val += evaluateTile(i,j,tempboard);
+				}
+			}
+		}
+		return val;
+	}
+	
+	public int evaluateTile(int r, int c, int[][] tempboard) {
+		//evaluates and returns the heuristic value of a tile based on the nearest queen (1, 0, or -1)
+		int val = 0;
+		int row = r;
+		int col = c;
+		//initialize the evaluation board, which tracks which tiles we have evaluated
+		boolean[][] eliminated = new boolean[11][11];
+		for(int i = 1; i<11 ; i++) {
+			for(int j = 1; j<11 ; j++) {
+				if(tempboard[i][j] == 0) {
+					eliminated[i][j] = false;
+				}else {
+					//we don't need to evaluate occupied tiles
+					eliminated[i][j] = true;
+				}
+			}
+		}
+		
+		boolean ourQueen = false;
+		boolean theirQueen = false;
+		Queue<int []> q = movesFromTile(row,col,eliminated,tempboard); // holds coordinate set of moves
+		while(!ourQueen && !theirQueen) {
+			eliminated[row][col] = true;
+			Queue<int []> nextq = new LinkedList<int[]>();
+			// if queue is empty, there are no queens that can reach the tile
+			if(q.size()==0) {break;}
+			while(q.size()>0) {
+				int[] coord = q.poll();
+				if(tempboard[coord[0]][coord[1]] == 1){
+					ourQueen = true;
+					System.out.println("asdfsda");
+				}else if(tempboard[coord[0]][coord[1]] == 2) {
+					theirQueen = true;
+				}else {
+					nextq = movesFromTile(coord[0],coord[1],eliminated,tempboard);
+					eliminated[coord[0]][coord[1]] = true;
+				}
+				
+			}
+			q = nextq;	
+		}
+		
+		//set the value of this tile
+		if(ourQueen && !theirQueen) {
+			val = 1;
+			tempboard[row][col]=4;
+		}else if(theirQueen && !ourQueen) {
+			val = -1;
+			tempboard[row][col]=5;
+		} // else val is 0
+		
+		return val;
+	}
+	
+	public Queue<int []> movesFromTile(int r, int c, boolean[][] eliminated, int[][] tempboard){
+		Queue<int []> q = new LinkedList<int []>(); // will hold coordinates of possible queen moves from/to this tile
+		
+		//current position
+		int row = r;
+		int col = c;
+		//horizontal moves
+		for(int left = 1; col-left>0 ;left++) {// check spaces to left of queen
+			if(tempboard[row][col-left]==0) { // space is clear
+				if(!eliminated[row][col-left]) {
+					q.add(new int[]{r,c-left});
+				}
+			}else {
+				break;
+			}
+		}
+		for(int right = 1; col+right<=10 ;right++) {// check spaces to right of queen
+			if(tempboard[row][col+right]==0) { // space is clear
+				if(!eliminated[row][col+right]) {
+					q.add(new int[]{r,c+right});
+				}
+			}else {
+				break;
+			}
+		}
+		//vertical moves
+		for(int down = 1; row-down>0 ;down++) {// check spaces under queen
+			if(tempboard[row-down][col]==0) { // space is clear
+				if(!eliminated[row-down][col]) {
+					q.add(new int[]{r-down,c});
+				}
+			}else {
+				break;
+			}
+		}
+		for(int up = 1; row+up<=10 ;up++) {// check spaces above queen
+			if(tempboard[row+up][col]==0) { // space is clear
+				if(!eliminated[row+up][col]) {
+					q.add(new int[]{r+up,c});
+				}
+			}else {
+				break;
+			}
+		}
+		//diagonals
+		for(int dl = 1; col-dl>0 && row-dl>0 ;dl++) {// check spaces down and left of queen
+			if(tempboard[row-dl][col-dl]==0) { // space is clear
+				if(!eliminated[row-dl][col-dl]) {
+					q.add(new int[]{r-dl,c-dl});
+				}
+			}else {
+				break;
+			}
+		}
+		for(int ur = 1; col+ur<=10 && row+ur<=10 ;ur++) {// check spaces up and right of queen
+			if(tempboard[row+ur][col+ur]==0) { // space is clear
+				if(!eliminated[row+ur][col+ur]) {
+					q.add(new int[]{r+ur,c+ur});
+				}
+			}else {
+				break;
+			}
+		}
+		for(int ul = 1; col-ul>0 && row+ul<=10 ;ul++) {// check spaces up and left of queen
+			if(tempboard[row+ul][col-ul]==0) { // space is clear
+				if(!eliminated[row+ul][col-ul]) {
+					q.add(new int[]{r+ul,c-ul});
+				}
+			}else {
+				break;
+			}
+		}
+		for(int dr = 1; col+dr<=10 && row-dr>0 ;dr++) {// check spaces down and right of queen
+			if(tempboard[row-dr][col+dr]==0) { // space is clear
+				if(!eliminated[row-dr][col+dr]) {
+					q.add(new int[]{r-dr,c+dr});
+				}
+			}else {
+				break;
+			}
+		}
+		
+		
+		return q;
+	}
+	
+	public static void main(String[] args) { 
+		MinDistanceFunction f = new MinDistanceFunction();
+		System.out.println(f.evaluateMove());
+		
+	}
+	
+}

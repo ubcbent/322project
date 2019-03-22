@@ -1,0 +1,116 @@
+package cosc322;
+import java.util.*;
+
+
+public class MinDistanceFunction {
+
+	public int currentValue; // current heuristic value of the tile
+	public int[][] gameboard = new int[11][11];
+	public boolean[][] evalBoard = new boolean[11][11];
+	
+	public MinDistanceFunction(int[][] board) {
+		
+		//initialize the evaluation board, which tracks which tiles we have evaluated
+		for(int i = 1; i<=11 ; i++) {
+			for(int j = 1; j<=11 ; j++) {
+				if(board[i][j] == 0) {
+					evalBoard[i][j] = false;
+				}else {
+					//we don't need to evaluate occupied tiles
+					evalBoard[i][j] = true;
+				}
+			}
+		}
+		
+		gameboard = board;
+		currentValue = 0;
+	}
+	
+	
+	public Queue<int []> movesFromTile(int r, int c){
+		Queue<int []> q = new LinkedList<int []>(); // will hold coordinates of possible queen moves from/to this tile
+		
+		//current position
+		int row = r;
+		int col = c;
+		//horizontal moves
+		for(int left = 1; col-left>0 ;left++) {// check spaces to left of queen
+			if(gameboard[row][col-left]==0) { // space is clear
+				if(!evalBoard[row][col-left]) {
+					q.add(new int[]{r,c-left});
+				}
+			}else {
+				break;
+			}
+		}
+		for(int right = 1; col+right<=10 ;right++) {// check spaces to right of queen
+			if(gameboard[row][col+right]==0) { // space is clear
+				if(!evalBoard[row][col+right]) {
+					q.add(new int[]{r,c+right});
+				}
+			}else {
+				break;
+			}
+		}
+		//vertical moves
+		for(int down = 1; row-down>0 ;down++) {// check spaces under queen
+			if(gameboard[row-down][col]==0) { // space is clear
+				if(!evalBoard[row-down][col]) {
+					q.add(new int[]{r-down,c});
+				}
+			}else {
+				break;
+			}
+		}
+		for(int up = 1; row+up<=10 ;up++) {// check spaces above queen
+			if(gameboard[row+up][col]==0) { // space is clear
+				if(!evalBoard[row+up][col]) {
+					q.add(new int[]{r+up,c});
+				}
+			}else {
+				break;
+			}
+		}
+		//diagonals
+		for(int dl = 1; col-dl>0 && row-dl>0 ;dl++) {// check spaces down and left of queen
+			if(gameboard[row-dl][col-dl]==0) { // space is clear
+				if(!evalBoard[row-dl][col-dl]) {
+					q.add(new int[]{r-dl,c-dl});
+				}
+			}else {
+				break;
+			}
+		}
+		for(int ur = 1; col+ur<=10 && row+ur<=10 ;ur++) {// check spaces up and right of queen
+			if(gameboard[row+ur][col+ur]==0) { // space is clear
+				if(!evalBoard[row+ur][col+ur]) {
+					q.add(new int[]{r+ur,c+ur});
+				}
+			}else {
+				break;
+			}
+		}
+		for(int ul = 1; col-ul>0 && row+ul<=10 ;ul++) {// check spaces up and left of queen
+			if(gameboard[row+ul][col-ul]==0) { // space is clear
+				if(!evalBoard[row-ul][col-ul]) {
+					q.add(new int[]{r+ul,c-ul});
+				}
+			}else {
+				break;
+			}
+		}
+		for(int dr = 1; col+dr<=10 && row-dr>0 ;dr++) {// check spaces down and right of queen
+			if(gameboard[row-dr][col+dr]==0) { // space is clear
+				if(!evalBoard[row-dr][col+dr]) {
+					q.add(new int[]{r-dr,c+dr});
+				}
+			}else {
+				break;
+			}
+		}
+		
+		
+		return q;
+	}
+	
+}
