@@ -49,12 +49,12 @@ public class SearchNode {
 		
 		LegalMove best;
 		
-		for (LegalMove m : moves) {
+		for (int i = 0; i < moves.size(); i++) {
 			
 		}
 	}
 	
-	public ArrayList<minimaxNode> buildTree() {
+	public void buildTree() {
 		tree = new ArrayList<minimaxNode>();
 		
 		int treeDepth = 1;
@@ -67,9 +67,9 @@ public class SearchNode {
 			int[][] updatedBoard = copyArray(gameBoard);
 			updatedBoard = updateBoard(m, updatedBoard, treeDepth);
 			
-			minimaxNode node = new minimaxNode();
+			minimaxNode node = new minimaxNode(root, m, updatedBoard);
 			tree.add(node);
-		}		
+		}
 	}
 	
 	//TODO
@@ -78,7 +78,15 @@ public class SearchNode {
 	}
 	
 	public int[][] updateBoard(LegalMove m, int[][] board, int depth) {
-		
+		if (depth % 2 == 0) {
+			board[m.currPos[0]][m.currPos[1]] = 0;
+			board[m.newPos[0]][m.newPos[1]] = 2;
+			board[m.arrowPos[0]][m.arrowPos[1]] = 3;
+		} else {
+			board[m.currPos[0]][m.currPos[1]] = 0;
+			board[m.newPos[0]][m.newPos[1]] = 1;
+			board[m.arrowPos[0]][m.arrowPos[1]] = 3;
+		}
 		
 		return board;
 	}
@@ -91,5 +99,9 @@ public class SearchNode {
 			    copied[i][j] = arr[i][j];
 		
 		return copied;
+	}
+	
+	public static void main(String[] args) {
+		
 	}
 }
