@@ -21,6 +21,7 @@ import ygraphs.ai.smart_fox.games.GameClient;
 import ygraphs.ai.smart_fox.games.GameModel;
 import ygraphs.ai.smart_fox.games.GamePlayer;
 import java.util.Timer;
+import java.util.Scanner;
 /**
  * For testing and demo purposes only. An GUI Amazon client for human players 
  * @author yong.gao@ubc.ca
@@ -63,7 +64,14 @@ public class Amazons extends GamePlayer{
 
 	//once logged in, the gameClient will have  the names of available game rooms  
 	ArrayList<String> rooms = gameClient.getRoomList();
-	this.gameClient.joinRoom(rooms.get(0));	 		
+	int num = 0;
+	for (String roomname : rooms) {
+		System.out.println(num + " - " + roomname);
+		num++;
+	}
+	Scanner roompicker = new Scanner(System.in);
+	int room = roompicker.nextInt();
+	this.gameClient.joinRoom(rooms.get(room));	 		
     }
     
     
@@ -80,27 +88,38 @@ public class Amazons extends GamePlayer{
 		
 	if(messageType.equals(GameMessage.GAME_ACTION_START)){
 		
-		System.out.println("asdf");
 	    if(((String) msgDetails.get("player-black")).equals(this.userName())){
-		System.out.println("Game State: " +  msgDetails.get("player-black"));
-		boardstate.initialize(false);
-		//System.out.print(boardstate.legalMoves.size());
-		boardstate.getLegalMoves();
-		//System.out.print(boardstate.legalMoves.size());
-    	LegalMove ourMove = boardstate.legalMoves.get(0);
-	    gameClient.sendMoveMessage(ourMove.currPos, ourMove.newPos, ourMove.arrowPos);
-	    boardstate.gameboard[ourMove.currPos[0]][ourMove.currPos[1]] = 0;
-	    boardstate.gameboard[ourMove.newPos[0]][ourMove.newPos[1]] = 1;
-	    boardstate.gameboard[ourMove.arrowPos[0]][ourMove.arrowPos[1]] = 3;
+			System.out.println("Game State: " +  msgDetails.get("player-black"));
+			boardstate.initialize(false);
+			//System.out.print(boardstate.legalMoves.size());
+			boardstate.getLegalMoves(boardstate.gameboard);
+			//System.out.print(boardstate.legalMoves.size());
+			MinDistanceFunction f = new MinDistanceFunction(boardstate.gameboard,boardstate.legalMoves);
+		    f.evaluateAllMoves();
+		    int maxindex = 0;
+		    for(int i = 0; i<boardstate.legalMoves.size();i++) {
+		    	if(boardstate.legalMoves.get(i).hscore>boardstate.legalMoves.get(maxindex).hscore) {
+		    		maxindex = i;
+		    	}
+		    }
+		    LegalMove ourMove = boardstate.legalMoves.get(maxindex);
+		    
+		    gameClient.sendMoveMessage(ourMove.currPos, ourMove.newPos, ourMove.arrowPos);
+		    boardstate.gameboard[ourMove.currPos[0]][ourMove.currPos[1]] = 0;
+		    boardstate.gameboard[ourMove.newPos[0]][ourMove.newPos[1]] = 1;
+		    boardstate.gameboard[ourMove.arrowPos[0]][ourMove.arrowPos[1]] = 3;
+		    
+		    board.markPosition(ourMove.newPos[0], ourMove.newPos[1], ourMove.arrowPos[0], ourMove.arrowPos[1], 
+		    		ourMove.currPos[0], ourMove.currPos[1], true);
 	    
-	    //find which queen was moved
-	    for(int i = 1; i<5 ; i++) {
-	    	if(boardstate.ourQueens[i][1] == ourMove.currPos[0] && boardstate.ourQueens[i][2] == ourMove.currPos[1]) {
-	    		boardstate.ourQueens[i][1] = ourMove.newPos[0];
-	    		boardstate.ourQueens[i][2] = ourMove.newPos[1];
-	    		break;
-	    	}
-	    }
+		    //find which queen was moved
+		    for(int i = 1; i<5 ; i++) {
+		    	if(boardstate.ourQueens[i][1] == ourMove.currPos[0] && boardstate.ourQueens[i][2] == ourMove.currPos[1]) {
+		    		boardstate.ourQueens[i][1] = ourMove.newPos[0];
+		    		boardstate.ourQueens[i][2] = ourMove.newPos[1];
+		    		break;
+		    	}
+		    }
 	    
 	    }else {
 	    	boardstate.initialize(true);
@@ -109,27 +128,47 @@ public class Amazons extends GamePlayer{
 	}
 	else if(messageType.equals(GameMessage.GAME_ACTION_MOVE)){
 	    handleOpponentMove(msgDetails);
+	    
 	    try {
-	    	Thread.sleep(100);
+	    	//Thread.sleep(500);
 	    }catch(Exception e) {
 	    	e.printStackTrace();
 	    }
-	    //make move
-	    boardstate.getLegalMoves();
 	    
-	    for(int i = 1; i<=10;i++) {
+	    //make move
+	    
+	    boardstate.getLegalMoves(boardstate.gameboard);
+	    MinDistanceFunction f = new MinDistanceFunction(boardstate.gameboard,boardstate.legalMoves);
+	    f.evaluateAllMoves();
+	    
+	    //print ai's perspective of the board (for testing)
+	    for(int i = 10; i>0;i--) {
 	    	for(int j = 1;j<=10;j++) {
 	    		System.out.print(boardstate.gameboard[i][j]+" ");
 	    	}
 	    	System.out.println();
 	    }
-	    
+	    //check if we lost
 	    if(boardstate.legalMoves.size()==0) {
 	    	System.out.println("The game is over");
 	    	gameClient.sendTextMessage(AmazonsGameMessage.GAME_STATE_PLAYER_LOST);
-	    	System.exit(0);
+	    	//System.exit(0);
 	    }
-	    LegalMove ourMove = boardstate.legalMoves.get(0);
+	    
+	   /*int maxindex = 0;
+	    for(int i = 0; i<boardstate.legalMoves.size();i++) {
+	    	if(boardstate.legalMoves.get(i).hscore>boardstate.legalMoves.get(maxindex).hscore) {
+	    		maxindex = i;
+	    		//System.out.println(boardstate.legalMoves.get(maxindex).hscore);
+	    	}
+	    }*/
+	    int randomindex=1+(int)(Math.random()*(boardstate.legalMoves.size()));
+	    LinkedList<LegalMove> lll=new LinkedList<LegalMove>();
+	     lll.add(boardstate.legalMoves.get(randomindex));
+	    LegalMove bestmove=miniMAX.Minimax(lll,1);
+	   
+	    LegalMove ourMove = bestmove;
+	    
 	    
 	    //update board
 	    boardstate.gameboard[ourMove.currPos[0]][ourMove.currPos[1]] = 0;
@@ -149,6 +188,7 @@ public class Amazons extends GamePlayer{
 	    		ourMove.currPos[0], ourMove.currPos[1], true);
 	    
 	    gameClient.sendMoveMessage(ourMove.currPos, ourMove.newPos, ourMove.arrowPos);
+	    //playerMove(ourMove.newPos[0],ourMove.newPos[1],ourMove.arrowPos[0],ourMove.arrowPos[1],ourMove.currPos[0],ourMove.currPos[1]);
 	}
 	
 	return true;
@@ -211,7 +251,7 @@ public class Amazons extends GamePlayer{
 	
 	//Task: Replace the above with a timed task to wait for 10 seconds befor sending the move
 	MyTimer schedule = new MyTimer(this.gameClient,qf,qn,ar);
-	timer.schedule(schedule, 10000);
+	timer.schedule(schedule, 30000);
 	schedule.run();
     }
 	  
@@ -542,8 +582,8 @@ public class Amazons extends GamePlayer{
      * @param args
      */
     public static void main(String[] args) { 
-	Amazons game01 = new Amazons("player-01", "01");
-	Amazons game02 = new Amazons("player-02", "02");
+	Amazons game01 = new Amazons("G4 - 1", "01");
+	//Amazons game02 = new Amazons("player-02", "02");
 	//Amazons game = new Amazons(args[0], args[1]);		
     }
 }//end of Amazon
